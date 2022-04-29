@@ -16,24 +16,30 @@ Flutter package for managing application state
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+TODO: Features
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+TODO: Getting started
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Currently dag_state is only available via github. To use it add the following to your pubspec.yaml
 
-```dart
-const like = 'sample';
+```yml
+dependencies:
+  flutter:
+    ...
+  dag_state:
+    git:
+      url: git@github.com:DAG-Studios/dag_state.git
+      ref: stable
+
 ```
+
+TODO: API Reference and usage
+
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+TODO: Extra stuff
