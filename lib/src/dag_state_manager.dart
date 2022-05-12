@@ -23,7 +23,7 @@
 library dag_state;
 import 'package:flutter/foundation.dart';
 
-abstract class State<T> {
+abstract class State<T> extends ChangeNotifier {
   T get value;  
 }
 
