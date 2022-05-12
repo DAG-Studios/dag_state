@@ -1,6 +1,6 @@
 name: dag_state
 description: Flutter package for managing application state
-version: 0.0.1
+version: 0.0.2
 homepage: https://dag-studios.com/oss/dag_state
 
 environment:
