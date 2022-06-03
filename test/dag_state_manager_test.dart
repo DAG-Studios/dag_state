@@ -99,7 +99,7 @@ void main() {
       sm.resetStream();
       expect(sm.currentState.value, 'State1');
       verifyNever(countState1Notify());
-      verify(countSMNotify()).called(7);
+      verify(countSMNotify()).called(8);
     });
     test('State1 Notify', () {
       firstState.testString = 'Hello';

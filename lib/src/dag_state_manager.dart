@@ -82,6 +82,13 @@ class StateManager<T> extends ChangeNotifier {
 
   void resetStream() {
     _currentStream?.reset();
+    notifyListeners();
+  }
+
+  void nextState() {
+    if (_currentStream?.nextState()??false) {
+      notifyListeners();
+    }
   }
 
   State get currentState {
@@ -89,12 +96,6 @@ class StateManager<T> extends ChangeNotifier {
       throw NoCurrentStateStream();
     }
     return _currentStream!.currentState;
-  }
-
-  void nextState() {
-    if (_currentStream?.nextState()??false) {
-      notifyListeners();
-    }
   }
 }
 
