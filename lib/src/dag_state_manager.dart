@@ -24,34 +24,52 @@ library dag_state;
 import 'package:flutter/foundation.dart';
 
 abstract class State<T> extends ChangeNotifier {
-  T get value;  
+  T get value;
+  bool get isAvailable;
 }
 
 class StateStream<T> {
   final List<State<T>> _states;
   final bool _repeats;
-  int _currentState;
+  late int _currentState;
 
-  StateStream(this._states, {bool repeating=false}):_repeats=repeating,_currentState=_states.isNotEmpty?0:-1;
+  StateStream(this._states, {bool repeating=false}):_repeats=repeating {
+    if (_states.isNotEmpty) {
+      reset();
+    }
+    else {
+      _currentState=-1;
+    }
+  }
   State get currentState {
     return _states[_currentState];
   }
 
   bool nextState() {
-    if (_currentState < _states.length-1) {
-      _currentState++;
+    int newState = _currentState;
+    do {
+      newState++;
+      if (newState >= _states.length) {
+        if (_repeats) {
+          newState=0;
+        }
+        else {
+          return false;
+        }
+      }
+    } while(!_states[newState].isAvailable && newState != _currentState);
+    if (newState != _currentState) {
+      _currentState = newState;
+      return true;
     }
-    else if (_currentState == _states.length-1 && _repeats) {
-      _currentState=0;
-    }
-    else {
-      return false;
-    }
-    return true;
+    return false;
   }
 
   State reset() {
     _currentState=0;
+    if (!_states[_currentState].isAvailable) {
+      nextState();
+    }
     return currentState;
   }
 }

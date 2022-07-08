@@ -27,9 +27,14 @@ import 'package:flutter_test/flutter_test.dart';
 abstract class TestState extends State<String> {
   final String _s;
   String _testStr='';
-  TestState(String name):_s=name;
+  bool valid;
+  TestState(String name, [bool initialValid=true]):_s=name, valid=initialValid;
+
   @override
   String get value => _s;
+
+  @override
+  bool get isAvailable => valid;
 
   String get testString {
     return _testStr;
@@ -40,10 +45,11 @@ abstract class TestState extends State<String> {
     notifyListeners();
   }
 }
-class State1 extends TestState {State1():super('State1');}
-class State2 extends TestState {State2():super('State2');}
-class State3 extends TestState {State3():super('State3');}
-class State4 extends TestState {State4():super('State4');}
+
+class State1 extends TestState {State1([bool valid=true]):super('State1', valid);}
+class State2 extends TestState {State2([bool valid=true]):super('State2', valid);}
+class State3 extends TestState {State3([bool valid=true]):super('State3', valid);}
+class State4 extends TestState {State4([bool valid=true]):super('State4', valid);}
 
 class MockCounter extends Mock {
   call();
@@ -78,7 +84,7 @@ void main() {
       reset(countState1Notify);
       reset(countSMNotify);
     });
-    test('State Stream 1', () {
+    test('Streams 1&2', () {
       expect(sm.currentState.value, 'State1');
       sm.nextState();
       expect(sm.currentState.value, 'State2');
@@ -105,6 +111,66 @@ void main() {
       firstState.testString = 'Hello';
       verifyNever(countSMNotify());
       verify(countState1Notify()).called(1);
+    });
+  });
+
+  group('Conditional State Manager', () {
+    State2 secondState = State2(false);
+    StateManager sm = StateManager(
+      stateStreams: {'stream1':
+        StateStream([
+          State1(true),
+          secondState,
+          State3(true)
+        ]),
+        'stream2':
+        StateStream([
+          State2(false),
+          State3(true),
+          State4(true)
+        ], repeating: true)
+      },
+      initialStream: 'stream1'
+    );
+    final countSMNotify = MockCounter();
+    final countState2Notify = MockCounter();
+    secondState.addListener(countState2Notify);
+    sm.addListener(countSMNotify);
+
+    setUp(() {
+      // Test Notify
+      reset(countState2Notify);
+      reset(countSMNotify);
+    });
+    test('Streams 1&2', () {
+      expect(sm.currentState.value, 'State1');
+      sm.nextState();
+      expect(sm.currentState.value, 'State3');
+      sm.nextState();
+      expect(sm.currentState.value, 'State3');
+      sm.changeStream('stream2');
+      expect(sm.currentState.value, 'State3');
+      sm.nextState();
+      expect(sm.currentState.value, 'State4');
+      sm.nextState();
+      expect(sm.currentState.value, 'State3');
+      sm.changeStream('stream1');
+      expect(sm.currentState.value, 'State3');
+      sm.resetStream();
+      expect(sm.currentState.value, 'State1');
+      secondState.valid=true;
+      sm.nextState();
+      expect(sm.currentState.value, 'State2');
+      sm.nextState();
+      expect(sm.currentState.value, 'State3');
+      sm.nextState();
+      expect(sm.currentState.value, 'State3');
+      sm.changeStream('stream2');
+      expect(sm.currentState.value, 'State3');
+      sm.resetStream();
+      expect(sm.currentState.value, 'State3');
+      verifyNever(countState2Notify());
+      verify(countSMNotify()).called(10);
     });
   });
 
