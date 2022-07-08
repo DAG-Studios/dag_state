@@ -2,6 +2,12 @@
 
 Changes to StateManager
 
+## 0.0.4
+
+**Add features:**
+
+- States now have the ability to indicate if they are available, if not they will be skipped (not accessible).
+
 ## 0.0.3
 
 **Fixed bugs:**
